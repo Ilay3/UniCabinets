@@ -1,0 +1,38 @@
+﻿@model IEnumerable<UniCabinet.Core.Models.ViewModel.Group.GroupListVM>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary">Список групп</h2>
+    <button class="btn btn-primary" onclick="openModal('/Group/GroupAddModal', 'addGroupModal')">
+        <i class="bi bi-plus-circle"></i> Добавить группу
+    </button>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Название группы</th>
+            <th>Тип группы</th>
+            <th>Курс</th>
+            <th>Семестр</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in Model)
+        {
+            <tr>
+                <td>@group.Name</td>
+                <td>@group.TypeGroup</td>
+                <td>@group.CourseId</td>
+                <td>@group.SemesterId</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="openModal('/Group/GroupEditModal', 'editGroupModal', @group.Id)">
+                        <i class="bi bi-pencil-square"></i> Редактировать
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div id="modalContainer"></div>

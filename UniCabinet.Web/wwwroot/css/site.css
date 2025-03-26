@@ -1,0 +1,65 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.teacher-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 столбца */
+    gap: 5px; /* Расстояние между строками */
+    max-height: 200px; /* Максимальная высота блока */
+    overflow-y: auto; /* Прокрутка только по вертикали */
+    border: 1px solid #ccc; /* Граница области */
+    padding: 10px;
+    background-color: #f9f9f9; /* Фоновый цвет */
+}
+
+.teacher-item {
+    white-space: nowrap; /* Не переносить текст */
+    overflow: hidden; /* Скрыть текст, если он выходит за пределы */
+    text-overflow: ellipsis; /* Добавить многоточие для длинного текста */
+}
+
+.teacher-containers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.teacher-item {
+    width: calc(33.333% - 15px); /* Три столбца */
+    min-width: 200px; /* Минимальная ширина элемента */
+    max-width: 300px; /* Максимальная ширина элемента */
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+    .teacher-item a {
+        text-decoration: none;
+    }
+
+    .teacher-item:hover {
+        background-color: #f1f1f1;
+    }
+
+
+#paginationNav {
+    margin-bottom: 70px; /* Увеличиваем отступ под пагинацией */
+}
