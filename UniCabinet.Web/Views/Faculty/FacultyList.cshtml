@@ -1,0 +1,55 @@
+﻿@model List<UniCabinet.Core.Models.ViewModel.Faculty.FacultyListVM>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Список факультетов</h2>
+        <button type="button" class="btn btn-primary" onclick="openModal('@Url.Action("FacultyAddModal", "Faculty")', 'addFacultyModal')">
+            <i class="bi bi-plus-circle"></i> Добавить факультет
+        </button>
+    </div>
+
+    <div class="row">
+        @if (Model?.Any() != true)
+        {
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Нет доступных факультетов. Вы можете добавить новый факультет.
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var faculty in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@faculty.Name</h5>
+                            <p class="card-text text-muted">@(string.IsNullOrEmpty(faculty.Description) ? "Без описания" : faculty.Description)</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-building"></i> Кафедр: @faculty.DepartmentsCount
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100">
+                                <a class="btn btn-outline-primary" asp-action="FacultyDetails" asp-route-id="@faculty.Id">
+                                    <i class="bi bi-eye"></i> Просмотр
+                                </a>
+                                <button type="button" class="btn btn-outline-warning" onclick="openModal('@Url.Action("FacultyEditModal", "Faculty", new { id = faculty.Id })', 'editFacultyModal')">
+                                    <i class="bi bi-pencil-square"></i> Редактировать
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="openModal('@Url.Action("AssignDepartmentsModal", "Faculty", new { id = faculty.Id })', 'assignDepartmentsModal')">
+                                    <i class="bi bi-link"></i> Кафедры
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div id="modalContainer"></div>

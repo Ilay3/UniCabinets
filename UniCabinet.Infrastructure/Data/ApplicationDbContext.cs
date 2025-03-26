@@ -29,6 +29,8 @@ namespace UniCabinet.Infrastructure.Data
         public DbSet<StudentProgressEntity> StudentProgresses { get; set; }
         public DbSet<SpecialtyEntity> Specialties { get; set; }
         public DbSet<DepartmentEntity> Departments { get; set; }
+        public DbSet<FacultyEntity> Faculties { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -57,6 +59,7 @@ namespace UniCabinet.Infrastructure.Data
             builder.ApplyConfiguration(new ExamConfiguration());
             builder.ApplyConfiguration(new StudentProgressConfiguration());
             builder.ApplyConfiguration(new DepartmentConfiguration());
+            builder.ApplyConfiguration(new FacultyConfiguration());
 
             builder.Entity<CourseEntity>().HasData(
                 new CourseEntity {Id = 1, Number = 1 },

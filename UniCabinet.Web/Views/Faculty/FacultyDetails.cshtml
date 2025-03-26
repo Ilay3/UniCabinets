@@ -1,0 +1,69 @@
+﻿@model UniCabinet.Core.Models.ViewModel.Faculty.FacultyDetailsVM
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">@Model.Name</h2>
+        <div class="btn-group">
+            <button class="btn btn-outline-warning" onclick="openModal('@Url.Action("FacultyEditModal", "Faculty", new { id = Model.Id })', 'editFacultyModal')">
+                <i class="bi bi-pencil-square"></i> Редактировать
+            </button>
+            <button class="btn btn-outline-success" onclick="openModal('@Url.Action("AssignDepartmentsModal", "Faculty", new { id = Model.Id })', 'assignDepartmentsModal')">
+                <i class="bi bi-link"></i> Управление кафедрами
+            </button>
+            <a class="btn btn-outline-secondary" asp-action="FacultyList">
+                <i class="bi bi-arrow-left"></i> К списку
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Описание</h5>
+                    <p class="card-text">@(string.IsNullOrEmpty(Model.Description) ? "Без описания" : Model.Description)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mb-3">Кафедры факультета</h3>
+
+    @if (Model.Departments?.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Название кафедры</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var department in Model.Departments)
+                    {
+                        <tr>
+                            <td>@department.DepartmentName</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="@Url.Action("DepartmentDetails", "Department", new { id = department.Id })">
+                                    <i class="bi bi-eye"></i> Подробности
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            К данному факультету не прикреплено ни одной кафедры.
+            <button class="btn btn-sm btn-outline-primary mt-2" onclick="openModal('@Url.Action("AssignDepartmentsModal", "Faculty", new { id = Model.Id })', 'assignDepartmentsModal')">
+                <i class="bi bi-link"></i> Прикрепить кафедры
+            </button>
+        </div>
+    }
+</div>
+
+<div id="modalContainer"></div>

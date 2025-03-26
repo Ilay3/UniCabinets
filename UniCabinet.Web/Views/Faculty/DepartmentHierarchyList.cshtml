@@ -1,0 +1,114 @@
+﻿@model UniCabinet.Core.Models.ViewModel.Faculty.FacultyHierarchyVM
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary">Иерархия кафедр по факультетам</h2>
+        <div class="btn-group">
+            <a class="btn btn-outline-primary" asp-controller="Faculty" asp-action="FacultyList">
+                <i class="bi bi-building"></i> Управление факультетами
+            </a>
+            <a class="btn btn-outline-success" asp-controller="Department" asp-action="DepartmentsAdminList">
+                <i class="bi bi-list-ul"></i> Список всех кафедр
+            </a>
+        </div>
+    </div>
+
+    @if (Model?.Faculties?.Count > 0)
+    {
+        <div class="accordion shadow-sm" id="facultiesAccordion">
+            @foreach (var faculty in Model.Faculties)
+            {
+                var headingId = $"heading-{faculty.Id}";
+                var collapseId = $"collapse-{faculty.Id}";
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="@headingId">
+                        <button class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#@collapseId"
+                                aria-expanded="false" aria-controls="@collapseId">
+                            <div class="d-flex align-items-center w-100">
+                                <span class="me-2"><i class="bi bi-building"></i></span>
+                                <span class="flex-grow-1">@faculty.Name</span>
+                                <span class="badge bg-primary rounded-pill ms-2">
+                                    Кафедр: @faculty.Departments.Count
+                                </span>
+                            </div>
+                        </button>
+                    </h2>
+
+                    <div id="@collapseId" class="accordion-collapse collapse"
+                         aria-labelledby="@headingId" data-bs-parent="#facultiesAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-2">
+                                <a class="btn btn-sm btn-outline-primary"
+                                   asp-controller="Faculty" asp-action="FacultyDetails" asp-route-id="@faculty.Id">
+                                    <i class="bi bi-info-circle"></i> Подробная информация о факультете
+                                </a>
+                            </div>
+
+                            @if (faculty.Departments?.Any() != true)
+                            {
+                                <div class="alert alert-info">
+                                    У этого факультета еще нет кафедр.
+                                    <button class="btn btn-sm btn-outline-primary ms-2"
+                                            onclick="openModal('@Url.Action("AssignDepartmentsModal", "Faculty", new { id = faculty.Id })', 'assignDepartmentsModal')">
+                                        <i class="bi bi-link"></i> Назначить кафедры
+                                    </button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Название кафедры</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var department in faculty.Departments)
+                                            {
+                                                <tr>
+                                                    <td>@department.DepartmentName</td>
+                                                    <td>
+                                                        <div class="btn-group btn-group-sm">
+                                                            <button class="btn btn-outline-warning"
+                                                                    onclick="openModal('@Url.Action("EditDepartmentModal", "Department", new { departmentId = department.Id })', 'editDepartmentModal')">
+                                                                <i class="bi bi-pencil-square"></i> Редактировать
+                                                            </button>
+                                                            <a class="btn btn-outline-primary"
+                                                               href="@Url.Action("DepartmentDetails", "Department", new { id = department.Id })">
+                                                                <i class="bi bi-eye"></i> Подробности
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p>В системе не найдено ни одного факультета или кафедры.</p>
+            <div class="mt-2">
+                <a class="btn btn-primary" asp-controller="Faculty" asp-action="FacultyList">
+                    <i class="bi bi-plus-circle"></i> Создать факультет
+                </a>
+                <a class="btn btn-secondary" asp-controller="Department" asp-action="DepartmentsAdminList">
+                    <i class="bi bi-plus-circle"></i> Создать кафедру
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<div id="modalContainer"></div>

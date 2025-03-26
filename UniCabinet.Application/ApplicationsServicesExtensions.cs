@@ -30,7 +30,7 @@ namespace UniCabinet.Infrastructure
             }
             catch (AutoMapperConfigurationException ex)
             {
-                Console.WriteLine(ex.Message); // Посмотреть подробности ошибки
+                Console.WriteLine(ex.Message);
                 throw;
             }
 

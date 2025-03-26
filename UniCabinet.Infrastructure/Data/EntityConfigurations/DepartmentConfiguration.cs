@@ -9,6 +9,16 @@ namespace UniCabinet.Infrastructure.Data.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<DepartmentEntity> builder)
         {
+            builder.HasKey(d => d.Id);
+
+            builder.Property(d => d.DepartmentName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.HasOne(d => d.Faculty)
+                .WithMany(f => f.Departments)
+                .HasForeignKey(d => d.FacultyId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(d => d.User)
                 .WithOne(user => user.DepartmentEntity)
@@ -19,7 +29,6 @@ namespace UniCabinet.Infrastructure.Data.EntityConfigurations
                 .WithOne(discipline => discipline.Department)
                 .HasForeignKey(discipline => discipline.DepartmentId)
                 .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }
