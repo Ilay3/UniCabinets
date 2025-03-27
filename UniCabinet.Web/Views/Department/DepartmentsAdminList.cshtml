@@ -21,10 +21,21 @@
                         <span class="me-2"><i class="bi bi-building"></i></span> @department.DepartmentName
                     </button>
                 </h2>
-
+               
                 <!-- Содержимое кафедры -->
                 <div id="collapse-@department.Id" class="accordion-collapse collapse" aria-labelledby="heading-@department.Id" data-bs-parent="#departmentsAccordion">
                     <div class="accordion-body">
+                        <p class="text-muted mb-3">
+                            <i class="bi bi-building"></i> Факультет:
+                            @if (department.FacultyId == null || string.IsNullOrEmpty(department.FacultyName))
+                            {
+                                <span class="text-warning">Не привязан к факультету</span>
+                            }
+                            else
+                            {
+                                <span class="text-success">@department.FacultyName</span>
+                            }
+                        </p>
                         <!-- Кнопка редактирования кафедры -->
                         <div class="d-flex justify-content-end mb-3">
                             <button type="button" class="btn btn-warning btn-sm"

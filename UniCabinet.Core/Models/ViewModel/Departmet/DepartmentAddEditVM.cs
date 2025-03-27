@@ -10,5 +10,7 @@ public class DepartmentAddEditVM
 {
     public int? Id { get; set; }
     public string DepartmentName { get; set; }
+    public int? FacultyId { get; set; }
+    public string FacultyName { get; set; }
 }
 

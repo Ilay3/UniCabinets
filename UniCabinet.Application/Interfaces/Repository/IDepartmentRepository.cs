@@ -12,5 +12,8 @@ public interface IDepartmentRepository
     Task UpdateDepartmentAsync(DepartmentEntity department);
     Task<DepartmentEntity> GetDepartmentByIdAsync(int departmentId);
 
+    Task<List<DepartmentDTO>> GetDepartmentsByFacultyIdAsync(int facultyId);
+    Task<List<DepartmentDTO>> GetDepartmentsWithoutFacultyAsync();
+
 
 }

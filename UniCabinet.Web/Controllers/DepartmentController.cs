@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using UniCabinet.Application.UseCases.DepartmentUseCase;
 using UniCabinet.Application.UseCases.DisciplineUseCase;
+using UniCabinet.Application.UseCases.FacultyUseCase;
 using UniCabinet.Core.DTOs.DepartmentManagmnet;
+using UniCabinet.Core.DTOs.FacultyManagement;
 using UniCabinet.Core.Models.ViewModel.Department;
 using UniCabinet.Core.Models.ViewModel.Departmet;
 using UniCabinet.Core.Models.ViewModel.Discipline;
@@ -73,8 +75,10 @@ namespace UniCabinet.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditDepartmentModal(int departmentId,
-            [FromServices] GetDepartmentByIdUseCase getDepartmentByIdUseCase)
+        public async Task<IActionResult> EditDepartmentModal(
+    int departmentId,
+    [FromServices] GetDepartmentByIdUseCase getDepartmentByIdUseCase,
+    [FromServices] GetAllFacultiesUseCase getAllFacultiesUseCase)
         {
             var departmentDTO = await getDepartmentByIdUseCase.ExecuteAsync(departmentId);
             if (departmentDTO == null)
@@ -82,27 +86,43 @@ namespace UniCabinet.Web.Controllers
                 return NotFound();
             }
 
+            var faculties = await getAllFacultiesUseCase.ExecuteAsync();
+
+            ViewBag.Faculties = faculties ?? new List<FacultyListDTO>();
+
             var model = _mapper.Map<DepartmentAddEditVM>(departmentDTO);
             return PartialView("_EditDepartmentModal", model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditDepartment(DepartmentAddEditVM model,
-            [FromServices] EditDepartmentUseCase editDepartmentUseCase)
+        public async Task<IActionResult> EditDepartment(
+    DepartmentAddEditVM model,
+    [FromServices] EditDepartmentUseCase editDepartmentUseCase)
         {
             if (ModelState.IsValid)
             {
                 var departmentDTO = _mapper.Map<DepartmentDTO>(model);
                 await editDepartmentUseCase.ExecuteAsync(departmentDTO);
 
-                return RedirectToAction("DepartmentsAdminList");
+                return Redirect("/Department/DepartmentsAdminList");
             }
-            else
-            {
-                return PartialView("_EditDepartmentModal", model);
-            }
+
+            // Если есть ошибки валидации, возвращаем к форме
+            return PartialView("_EditDepartmentModal", model);
         }
 
-       
+        [HttpGet]
+        public async Task<IActionResult> DepartmentDetails(int id,
+        [FromServices] GetDepartmentByIdUseCase getDepartmentByIdUseCase)
+        {
+            var department = await getDepartmentByIdUseCase.ExecuteAsync(id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = _mapper.Map<DepartmantVM>(department);
+            return View(viewModel);
+        }
     }
 }

@@ -52,5 +52,7 @@ namespace UniCabinet.Core.Models.ViewModel.Faculty
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsAssigned { get; set; }
+        public bool IsAlreadyAssignedToOtherFaculty { get; set; }
+        public string OtherFacultyName { get; set; }
     }
 }

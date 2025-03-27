@@ -39,6 +39,8 @@ public class DepartmentRepositoryImpl : IDepartmentRepository
     public async Task<List<DepartmentEntity>> GetDepartmentsWithUsersAsync()
     {
         var departments = await _context.Departments
+            .AsNoTracking()
+            .Include(d => d.Faculty)
             .Include(d => d.User)
             .Include(d => d.Discipline)
                 .ThenInclude(di => di.Specialty)
@@ -70,5 +72,21 @@ public class DepartmentRepositoryImpl : IDepartmentRepository
         return await _context.Departments.FindAsync(departmentId);
     }
 
+    public async Task<List<DepartmentDTO>> GetDepartmentsByFacultyIdAsync(int facultyId)
+    {
+        var departments = await _context.Departments
+            .Include(d => d.Faculty)
+            .Where(d => d.FacultyId == facultyId)
+            .ToListAsync();
 
+        return _mapper.Map<List<DepartmentDTO>>(departments);
+    }
+    public async Task<List<DepartmentDTO>> GetDepartmentsWithoutFacultyAsync()
+    {
+        var departments = await _context.Departments
+            .Where(d => d.FacultyId == null)
+            .ToListAsync();
+
+        return _mapper.Map<List<DepartmentDTO>>(departments);
+    }
 }

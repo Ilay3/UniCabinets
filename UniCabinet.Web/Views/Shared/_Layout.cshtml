@@ -38,13 +38,19 @@
                                     <a class="dropdown-item" asp-controller="Specialization" asp-action="GetDataSpecialization">Список специальностей преподавателей</a>
                                 </div>
                             </li>
-
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Group" asp-action="GroupsList">Список групп</a>
                             </li>
-
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Department" asp-action="DepartmentsAdminList">Список кафедр университета</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Faculty" asp-action="FacultyList">Список факультетов</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Faculty" asp-action="FacultyHierarchy">
+                                    <i class="bi bi-diagram-3"></i> Структура университета
+                                </a>
                             </li>
                         }
 
@@ -63,6 +69,7 @@
                                     <a class="dropdown-item" asp-controller="Department" asp-action="DepartmentList">Просмотр кафедры</a>
                                 </div>
                             </li>
+                            
                         }
 
                         @if (User.IsInRole("Преподаватель"))

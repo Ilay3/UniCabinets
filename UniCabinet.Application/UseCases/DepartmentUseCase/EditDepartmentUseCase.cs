@@ -21,7 +21,15 @@ public class EditDepartmentUseCase
         if (departmentDTO == null)
             throw new ArgumentNullException(nameof(departmentDTO));
 
-        var departmentEntity = _mapper.Map<DepartmentEntity>(departmentDTO);
-        await _departmentRepository.UpdateDepartmentAsync(departmentEntity);
+        var departmentEntity = await _departmentRepository.GetDepartmentByIdAsync(departmentDTO.Id);
+        if (departmentEntity != null)
+        {
+            departmentEntity.DepartmentName = departmentDTO.DepartmentName;
+            departmentEntity.FacultyId = departmentDTO.FacultyId;
+
+            await _departmentRepository.UpdateDepartmentAsync(departmentEntity);
+        }
     }
+
+
 }

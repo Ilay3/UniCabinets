@@ -1,58 +1,59 @@
-﻿@model UniCabinet.Core.Models.ViewModel.Faculty.FacultyDepartmentAssignmentVM
+﻿<form asp-action="AssignDepartments" asp-controller="Faculty" method="post">
+    <div class="modal-body">
+        <input type="hidden" name="facultyId" value="@Model.FacultyId" />
 
-<div class="modal fade" id="assignDepartmentsModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Назначение кафедр для факультета: @Model.FacultyName</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-            </div>
-            <form asp-action="AssignDepartments" asp-controller="Faculty" method="post">
-                <div class="modal-body">
-                    <input type="hidden" asp-for="FacultyId" />
-                    <input type="hidden" asp-for="FacultyName" />
+        <p class="text-muted mb-3">Выберите кафедры, которые будут относиться к этому факультету:</p>
 
-                    <p class="text-muted mb-3">Выберите кафедры, которые будут относиться к этому факультету:</p>
-
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Выбрать</th>
-                                    <th>Название кафедры</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.AvailableDepartments.Count; i++)
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <!-- Заголовок таблицы остается без изменений -->
+                <tbody>
+                    @foreach (var department in Model.AvailableDepartments)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                @if (department.IsAlreadyAssignedToOtherFaculty)
                                 {
-                                    <tr>
-                                        <td class="text-center">
-                                            <input type="hidden" name="AvailableDepartments[@i].Id" value="@Model.AvailableDepartments[i].Id" />
-                                            <input type="hidden" name="AvailableDepartments[@i].Name" value="@Model.AvailableDepartments[i].Name" />
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="checkbox"
-                                                       name="AvailableDepartments[@i].IsAssigned"
-                                                       id="dep-@Model.AvailableDepartments[i].Id"
-                                                       value="true"
-                                                @(Model.AvailableDepartments[i].IsAssigned ? "checked" : "") />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <label for="dep-@Model.AvailableDepartments[i].Id">
-                                                @Model.AvailableDepartments[i].Name
-                                            </label>
-                                        </td>
-                                    </tr>
+                                    <input type="checkbox" disabled="disabled" />
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                </div>
-            </form>
+                                else
+                                {
+                                    <input type="checkbox" name="selectedDepartmentIds"
+                                           value="@department.Id"
+                                    @(department.IsAssigned ? "checked" : "") />
+                                }
+                            </td>
+                            <td>@department.Name</td>
+                            <td>
+                            <td>
+                                    @if (department.IsAlreadyAssignedToOtherFaculty)
+                                    {
+                                    <span class="badge bg-warning text-dark">
+                                        Привязана к факультету: @department.OtherFacultyName
+                                    </span>
+                                    }
+                                    else if (department.IsAssigned)
+                                    {
+                                    <span class="badge bg-success">
+                                        Привязана к этому факультету
+                                    </span>
+                                    }
+                                    else
+                                    {
+                                    <span class="badge bg-secondary">
+                                        Не привязана
+                                    </span>
+                                    }
+                            </td>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

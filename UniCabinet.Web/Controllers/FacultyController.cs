@@ -104,9 +104,9 @@ namespace UniCabinet.Web.Controllers
 
         [HttpGet]
         public async Task<IActionResult> AssignDepartmentsModal(
-            int id,
-            [FromServices] GetFacultyWithDepartmentsUseCase getFacultyWithDepartmentsUseCase,
-            [FromServices] IDepartmentRepository departmentRepository)
+    int id,
+    [FromServices] GetFacultyWithDepartmentsUseCase getFacultyWithDepartmentsUseCase,
+    [FromServices] IDepartmentRepository departmentRepository)
         {
             var facultyDTO = await getFacultyWithDepartmentsUseCase.ExecuteAsync(id);
             if (facultyDTO == null)
@@ -114,6 +114,7 @@ namespace UniCabinet.Web.Controllers
                 return NotFound();
             }
 
+            // Получаем все кафедры
             var allDepartments = await departmentRepository.GetAllDepartment();
 
             var assignmentVM = new FacultyDepartmentAssignmentVM
@@ -124,7 +125,9 @@ namespace UniCabinet.Web.Controllers
                 {
                     Id = d.Id,
                     Name = d.DepartmentName,
-                    IsAssigned = facultyDTO.Departments.Any(fd => fd.Id == d.Id)
+                    IsAssigned = facultyDTO.Departments.Any(fd => fd.Id == d.Id),
+                    IsAlreadyAssignedToOtherFaculty = d.FacultyId.HasValue && d.FacultyId != facultyDTO.Id,
+                    OtherFacultyName = d.FacultyId.HasValue && d.FacultyId != facultyDTO.Id ? d.FacultyName : null
                 }).ToList()
             };
 
@@ -133,22 +136,18 @@ namespace UniCabinet.Web.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AssignDepartments(
-            FacultyDepartmentAssignmentVM viewModel,
-            [FromServices] AssignDepartmentsToFacultyUseCase assignDepartmentsToFacultyUseCase)
+    int facultyId,
+    List<int> selectedDepartmentIds,
+    [FromServices] AssignDepartmentsToFacultyUseCase assignDepartmentsToFacultyUseCase)
         {
-            if (!ModelState.IsValid)
+            if (selectedDepartmentIds == null)
             {
-                return PartialView("_AssignDepartmentsModal", viewModel);
+                selectedDepartmentIds = new List<int>();
             }
 
-            var departmentIds = viewModel.AvailableDepartments
-                .Where(d => d.IsAssigned)
-                .Select(d => d.Id)
-                .ToList();
+            await assignDepartmentsToFacultyUseCase.ExecuteAsync(facultyId, selectedDepartmentIds);
 
-            await assignDepartmentsToFacultyUseCase.ExecuteAsync(viewModel.FacultyId, departmentIds);
-
-            return RedirectToAction("FacultyDetails", new { id = viewModel.FacultyId });
+            return RedirectToAction("FacultyDetails", new { id = facultyId });
         }
 
         [HttpGet]
