@@ -29,17 +29,6 @@ namespace UniCabinet.Application.Profiles
             CreateMap<FacultyEditDTO, FacultyEntity>()
                 .ForMember(dest => dest.UserFaculties, opt => opt.Ignore());
 
-            // Multi-department mappings
-            CreateMap<UserMultiDepartmentDTO, UserMultiDepartmentVM>()
-                .ReverseMap()
-                .ForMember(dest => dest.AvailableDepartments, opt => opt.MapFrom(
-                    (src, dest) => src.AvailableDepartments ?? new List<SelectListItemDTO>()));
-
-            // Multi-faculty mappings
-            CreateMap<UserMultiFacultyDTO, UserMultiFacultyVM>()
-                .ReverseMap()
-                .ForMember(dest => dest.AvailableFaculties, opt => opt.MapFrom(
-                    (src, dest) => src.AvailableFaculties ?? new List<SelectListItemDTO>()));
         }
     }
 }

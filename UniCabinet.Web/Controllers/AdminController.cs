@@ -6,9 +6,11 @@ using UniCabinet.Application.UseCases.AdminUseCase;
 using UniCabinet.Application.UseCases.DepartmentUseCase;
 using UniCabinet.Core.DTOs.UserManagement;
 using UniCabinet.Core.Models.ViewModel;
+using UniCabinet.Core.Models.ViewModel.Common;
 using UniCabinet.Core.Models.ViewModel.Departmet;
 using UniCabinet.Core.Models.ViewModel.User;
 using UniCabinet.Domain.Entities;
+using UniCabinet.Web.Helpers;
 
 public class AdminController : Controller
 {
@@ -232,8 +234,8 @@ public class AdminController : Controller
 
     [HttpGet]
     public async Task<IActionResult> UserDepartmentsModal(
-    string userId,
-    [FromServices] GetUserDepartmentsModalUseCase getUserDepartmentsModalUseCase)
+     string userId,
+     [FromServices] GetUserDepartmentsModalUseCase getUserDepartmentsModalUseCase)
     {
         var userDepartmentsDTO = await getUserDepartmentsModalUseCase.Execute(userId);
         if (userDepartmentsDTO == null)
@@ -241,31 +243,9 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        var viewModel = _mapper.Map<UserMultiDepartmentVM>(userDepartmentsDTO);
+        var viewModel = userDepartmentsDTO.ToViewModel();
 
         return PartialView("_MultiDepartmentModal", viewModel);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateUserDepartments(
-        string userId,
-        List<int> selectedDepartmentIds,
-        int? primaryDepartmentId,
-        [FromServices] UpdateUserDepartmentsUseCase updateUserDepartmentsUseCase)
-    {
-        if (selectedDepartmentIds == null)
-        {
-            selectedDepartmentIds = new List<int>();
-        }
-
-        var result = await updateUserDepartmentsUseCase.Execute(userId, selectedDepartmentIds, primaryDepartmentId);
-        if (!result)
-        {
-            // Обработка ошибки
-            return RedirectToAction("VerifiedUsers");
-        }
-
-        return RedirectToAction("VerifiedUsers");
     }
 
     [HttpGet]
