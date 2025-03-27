@@ -55,6 +55,16 @@
                                                 onclick="openModal('@Url.Action("SpecAndDepEditModal", "Admin", new { userId = user.Id })', 'groupModal')">
                                             <i class="bi bi-pencil-square"></i> Кафедра и спец.
                                         </button>
+
+                                        <button type="button" class="btn btn-info btn-sm me-1"
+                                                onclick="openModal('@Url.Action("UserDepartmentsModal", "Admin", new { userId = user.Id })', 'multiDepartmentModal')">
+                                            <i class="bi bi-buildings"></i> Кафедры
+                                        </button>
+
+                                        <button type="button" class="btn btn-primary btn-sm me-1"
+                                                onclick="openModal('@Url.Action("UserFacultiesModal", "Admin", new { userId = user.Id })', 'multiFacultyModal')">
+                                            <i class="bi bi-bank"></i> Факультеты
+                                        </button>
                                     }
                                     else
                                     {

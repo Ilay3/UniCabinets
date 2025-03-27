@@ -14,5 +14,11 @@ namespace UniCabinet.Application.Interfaces
         Task<UserDTO> GetUserByIdAsync(string userId);
         Task UpdateUserSpecAndDepAsync(UserDTO userDto);
 
+        Task<UserMultiDepartmentDTO> GetUserDepartmentsAsync(string userId);
+        Task UpdateUserDepartmentsAsync(string userId, List<int> departmentIds, int? primaryDepartmentId);
+
+        Task<UserMultiFacultyDTO> GetUserFacultiesAsync(string userId);
+        Task UpdateUserFacultiesAsync(string userId, List<int> facultyIds, int? primaryFacultyId);
+
     }
 }

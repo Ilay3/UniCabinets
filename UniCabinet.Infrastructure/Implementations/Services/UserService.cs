@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Data;
 using UniCabinet.Application.Interfaces;
+using UniCabinet.Application.Interfaces.Repository;
+using UniCabinet.Core.DTOs.Common;
 using UniCabinet.Core.DTOs.UserManagement;
 using UniCabinet.Domain.Entities;
 
@@ -10,11 +12,15 @@ namespace UniCabinet.Infrastructure.Implementations.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly UserManager<UserEntity> _userManager;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IFacultyRepository _facultyRepository;
 
-        public UserService(IUserRepository userRepository, UserManager<UserEntity> userManager)
+        public UserService(IUserRepository userRepository, UserManager<UserEntity> userManager, IDepartmentRepository departmentRepository, IFacultyRepository facultyRepository)
         {
             _userRepository = userRepository;
             _userManager = userManager;
+            _departmentRepository = departmentRepository;
+            _facultyRepository = facultyRepository;
         }
 
         public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
@@ -139,7 +145,73 @@ namespace UniCabinet.Infrastructure.Implementations.Services
 
             await _userRepository.UpdateUserAsync(userEntity);
         }
+        // В классе UserService
 
+        public async Task<UserMultiDepartmentDTO> GetUserDepartmentsAsync(string userId)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var userDepartments = await _userRepository.GetUserDepartmentsAsync(userId);
+            var allDepartments = await _departmentRepository.GetAllDepartment();
+
+            var dto = new UserMultiDepartmentDTO
+            {
+                UserId = userId,
+                FullName = $"{user.LastName} {user.FirstName} {user.Patronymic}",
+                SelectedDepartmentIds = userDepartments.Select(ud => ud.DepartmentId).ToList(),
+                PrimaryDepartmentId = user.DepartmentId,
+                AvailableDepartments = allDepartments.Select(d => new SelectListItemDTO
+                {
+                    Value = d.Id.ToString(),
+                    Text = d.DepartmentName,
+                    Selected = userDepartments.Any(ud => ud.DepartmentId == d.Id)
+                }).ToList()
+            };
+
+            return dto;
+        }
+
+        public async Task UpdateUserDepartmentsAsync(string userId, List<int> departmentIds, int? primaryDepartmentId)
+        {
+            await _userRepository.UpdateUserDepartmentsAsync(userId, departmentIds, primaryDepartmentId);
+        }
+
+        public async Task<UserMultiFacultyDTO> GetUserFacultiesAsync(string userId)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var userFaculties = await _userRepository.GetUserFacultiesAsync(userId);
+            var allFaculties = await _facultyRepository.GetAllFacultiesAsync();
+
+            var dto = new UserMultiFacultyDTO
+            {
+                UserId = userId,
+                FullName = $"{user.LastName} {user.FirstName} {user.Patronymic}",
+                SelectedFacultyIds = userFaculties.Select(uf => uf.FacultyId).ToList(),
+                PrimaryFacultyId = userFaculties.FirstOrDefault(uf => uf.IsPrimary)?.FacultyId,
+                AvailableFaculties = allFaculties.Select(f => new SelectListItemDTO
+                {
+                    Value = f.Id.ToString(),
+                    Text = f.Name,
+                    Selected = userFaculties.Any(uf => uf.FacultyId == f.Id)
+                }).ToList()
+            };
+
+            return dto;
+        }
+
+        public async Task UpdateUserFacultiesAsync(string userId, List<int> facultyIds, int? primaryFacultyId)
+        {
+            await _userRepository.UpdateUserFacultiesAsync(userId, facultyIds, primaryFacultyId);
+        }
 
     }
 }

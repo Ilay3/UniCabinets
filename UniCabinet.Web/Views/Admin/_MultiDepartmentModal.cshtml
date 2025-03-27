@@ -1,0 +1,93 @@
+﻿@model UniCabinet.Core.Models.ViewModel.User.UserMultiDepartmentVM
+
+<div class="modal fade" id="multiDepartmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Заголовок модального окна -->
+            <div class="modal-header">
+                <h5 class="modal-title">Изменить кафедры для @Model.FullName</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <!-- Тело модального окна -->
+            <div class="modal-body">
+                <form asp-action="UpdateUserDepartments">
+                    <input type="hidden" name="UserId" value="@Model.UserId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Выберите кафедры:</label>
+                        <div class="border p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                            @foreach (var dept in Model.AvailableDepartments)
+                            {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input department-checkbox"
+                                           type="checkbox"
+                                           name="SelectedDepartmentIds"
+                                           value="@dept.Value"
+                                           id="dept_@dept.Value"
+                                    @(Model.SelectedDepartmentIds.Contains(int.Parse(dept.Value)) ? "checked" : "") />
+                                    <label class="form-check-label" for="dept_@dept.Value">
+                                        @dept.Text
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Основная кафедра:</label>
+                        <select name="PrimaryDepartmentId" class="form-select" id="primaryDepartmentSelect">
+                            <option value="">-- Выберите основную кафедру --</option>
+                            @{
+                                var selectedDepartments = Model.AvailableDepartments
+                                .Where(d => Model.SelectedDepartmentIds.Contains(int.Parse(d.Value)))
+                                .ToList();
+                            }
+                            @foreach (var dept in selectedDepartments)
+                            {
+                                var isSelected = Model.PrimaryDepartmentId.HasValue &&
+                                Model.PrimaryDepartmentId.Value.ToString() == dept.Value;
+                                <option value="@dept.Value"
+                                        selected="@(isSelected ? "selected" : null)">
+                                    @dept.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Подвал модального окна -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Обновление выпадающего списка основной кафедры при изменении отметок
+        $('.department-checkbox').change(function () {
+            var primarySelect = $('#primaryDepartmentSelect');
+            var selectedValue = primarySelect.val();
+
+            // Очистить выпадающий список, кроме пустой опции
+            primarySelect.find('option:not(:first)').remove();
+
+            // Добавить отмеченные кафедры в выпадающий список
+            $('.department-checkbox:checked').each(function () {
+                var value = $(this).val();
+                var text = $('label[for="dept_' + value + '"]').text().trim();
+
+                var option = new Option(text, value, false, value === selectedValue);
+                primarySelect.append(option);
+            });
+
+            // Если ранее выбранная основная кафедра была снята, сбросить выбор
+            if (!$('.department-checkbox[value="' + selectedValue + '"]:checked').length) {
+                primarySelect.val('');
+            }
+        });
+    });
+</script>

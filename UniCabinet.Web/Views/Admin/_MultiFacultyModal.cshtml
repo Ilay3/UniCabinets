@@ -1,0 +1,93 @@
+﻿@model UniCabinet.Core.Models.ViewModel.User.UserMultiFacultyVM
+
+<div class="modal fade" id="multiFacultyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Заголовок модального окна -->
+            <div class="modal-header">
+                <h5 class="modal-title">Изменить факультеты для @Model.FullName</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <!-- Тело модального окна -->
+            <div class="modal-body">
+                <form asp-action="UpdateUserFaculties">
+                    <input type="hidden" name="UserId" value="@Model.UserId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Выберите факультеты:</label>
+                        <div class="border p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+                            @foreach (var fac in Model.AvailableFaculties)
+                            {
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input faculty-checkbox"
+                                           type="checkbox"
+                                           name="SelectedFacultyIds"
+                                           value="@fac.Value"
+                                           id="fac_@fac.Value"
+                                    @(Model.SelectedFacultyIds.Contains(int.Parse(fac.Value)) ? "checked" : "") />
+                                    <label class="form-check-label" for="fac_@fac.Value">
+                                        @fac.Text
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Основной факультет:</label>
+                        <select name="PrimaryFacultyId" class="form-select" id="primaryFacultySelect">
+                            <option value="">-- Выберите основной факультет --</option>
+                            @{
+                                var selectedFaculties = Model.AvailableFaculties
+                                .Where(f => Model.SelectedFacultyIds.Contains(int.Parse(f.Value)))
+                                .ToList();
+                            }
+                            @foreach (var fac in selectedFaculties)
+                            {
+                                var isSelected = Model.PrimaryFacultyId.HasValue &&
+                                Model.PrimaryFacultyId.Value.ToString() == fac.Value;
+                                <option value="@fac.Value"
+                                        selected="@(isSelected ? "selected" : null)">
+                                    @fac.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Подвал модального окна -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Обновление выпадающего списка основного факультета при изменении отметок
+        $('.faculty-checkbox').change(function () {
+            var primarySelect = $('#primaryFacultySelect');
+            var selectedValue = primarySelect.val();
+
+            // Очистить выпадающий список, кроме пустой опции
+            primarySelect.find('option:not(:first)').remove();
+
+            // Добавить отмеченные факультеты в выпадающий список
+            $('.faculty-checkbox:checked').each(function () {
+                var value = $(this).val();
+                var text = $('label[for="fac_' + value + '"]').text().trim();
+
+                var option = new Option(text, value, false, value === selectedValue);
+                primarySelect.append(option);
+            });
+
+            // Если ранее выбранный основной факультет был снят, сбросить выбор
+            if (!$('.faculty-checkbox[value="' + selectedValue + '"]:checked').length) {
+                primarySelect.val('');
+            }
+        });
+    });
+</script>

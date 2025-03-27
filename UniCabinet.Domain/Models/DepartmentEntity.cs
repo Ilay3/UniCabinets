@@ -10,6 +10,8 @@ namespace UniCabinet.Domain.Models
 
         public FacultyEntity Faculty { get; set; }
         public ICollection<UserEntity> User { get; set; }
+        public ICollection<UserDepartmentEntity> UserDepartments { get; set; }
+
         public ICollection<DisciplineEntity> Discipline { get; set; }
 
     }

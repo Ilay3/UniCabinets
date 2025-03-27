@@ -9,5 +9,6 @@ namespace UniCabinet.Domain.Entities
         public string Description { get; set; }
 
         public ICollection<DepartmentEntity> Departments { get; set; }
+        public ICollection<UserFacultyEntity> UserFaculties { get; set; }
     }
 }

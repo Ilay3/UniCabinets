@@ -30,11 +30,41 @@ namespace UniCabinet.Infrastructure.Data
         public DbSet<SpecialtyEntity> Specialties { get; set; }
         public DbSet<DepartmentEntity> Departments { get; set; }
         public DbSet<FacultyEntity> Faculties { get; set; }
+        public DbSet<UserDepartmentEntity> UserDepartments { get; set; }
+        public DbSet<UserFacultyEntity> UserFaculties { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<UserDepartmentEntity>()
+        .HasKey(ud => new { ud.UserId, ud.DepartmentId });
+
+            builder.Entity<UserDepartmentEntity>()
+                .HasOne(ud => ud.User)
+                .WithMany(u => u.UserDepartments)
+                .HasForeignKey(ud => ud.UserId);
+
+            builder.Entity<UserDepartmentEntity>()
+                .HasOne(ud => ud.Department)
+                .WithMany(d => d.UserDepartments)
+                .HasForeignKey(ud => ud.DepartmentId);
+
+            // Добавьте конфигурацию для UserFaculty
+            builder.Entity<UserFacultyEntity>()
+                .HasKey(uf => new { uf.UserId, uf.FacultyId });
+
+            builder.Entity<UserFacultyEntity>()
+                .HasOne(uf => uf.User)
+                .WithMany(u => u.UserFaculties)
+                .HasForeignKey(uf => uf.UserId);
+
+            builder.Entity<UserFacultyEntity>()
+                .HasOne(uf => uf.Faculty)
+                .WithMany(f => f.UserFaculties)
+                .HasForeignKey(uf => uf.FacultyId);
+
 
             // Переименовываем таблицы Identity
             builder.Entity<UserEntity>(b => b.ToTable("Users"));

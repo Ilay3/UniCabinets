@@ -1,6 +1,7 @@
 ﻿// UniCabinet.Application/Interfaces/IUserRepository.cs
 using UniCabinet.Core.DTOs.UserManagement;
 using UniCabinet.Domain.Entities;
+using UniCabinet.Domain.Models;
 
 namespace UniCabinet.Application.Interfaces
 {
@@ -14,5 +15,11 @@ namespace UniCabinet.Application.Interfaces
 
         Task<List<UserDTO>> GetStudentsByGroupIdAsync(int groupId);
 
+
+        Task<List<UserDepartmentEntity>> GetUserDepartmentsAsync(string userId);
+        Task UpdateUserDepartmentsAsync(string userId, List<int> departmentIds, int? primaryDepartmentId);
+
+        Task<List<UserFacultyEntity>> GetUserFacultiesAsync(string userId);
+        Task UpdateUserFacultiesAsync(string userId, List<int> facultyIds, int? primaryFacultyId);
     }
 }

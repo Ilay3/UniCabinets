@@ -229,6 +229,82 @@ public class AdminController : Controller
         return PartialView("_SpecializationAndDepartmentModal", viewModel);
 
     }
+
+    [HttpGet]
+    public async Task<IActionResult> UserDepartmentsModal(
+    string userId,
+    [FromServices] GetUserDepartmentsModalUseCase getUserDepartmentsModalUseCase)
+    {
+        var userDepartmentsDTO = await getUserDepartmentsModalUseCase.Execute(userId);
+        if (userDepartmentsDTO == null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = _mapper.Map<UserMultiDepartmentVM>(userDepartmentsDTO);
+
+        return PartialView("_MultiDepartmentModal", viewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateUserDepartments(
+        string userId,
+        List<int> selectedDepartmentIds,
+        int? primaryDepartmentId,
+        [FromServices] UpdateUserDepartmentsUseCase updateUserDepartmentsUseCase)
+    {
+        if (selectedDepartmentIds == null)
+        {
+            selectedDepartmentIds = new List<int>();
+        }
+
+        var result = await updateUserDepartmentsUseCase.Execute(userId, selectedDepartmentIds, primaryDepartmentId);
+        if (!result)
+        {
+            // Обработка ошибки
+            return RedirectToAction("VerifiedUsers");
+        }
+
+        return RedirectToAction("VerifiedUsers");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> UserFacultiesModal(
+        string userId,
+        [FromServices] GetUserFacultiesModalUseCase getUserFacultiesModalUseCase)
+    {
+        var userFacultiesDTO = await getUserFacultiesModalUseCase.Execute(userId);
+        if (userFacultiesDTO == null)
+        {
+            return NotFound();
+        }
+
+        var viewModel = _mapper.Map<UserMultiFacultyVM>(userFacultiesDTO);
+
+        return PartialView("_MultiFacultyModal", viewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateUserFaculties(
+        string userId,
+        List<int> selectedFacultyIds,
+        int? primaryFacultyId,
+        [FromServices] UpdateUserFacultiesUseCase updateUserFacultiesUseCase)
+    {
+        if (selectedFacultyIds == null)
+        {
+            selectedFacultyIds = new List<int>();
+        }
+
+        var result = await updateUserFacultiesUseCase.Execute(userId, selectedFacultyIds, primaryFacultyId);
+        if (!result)
+        {
+            // Обработка ошибки
+            return RedirectToAction("VerifiedUsers");
+        }
+
+        return RedirectToAction("VerifiedUsers");
+    }
 }
 
 
