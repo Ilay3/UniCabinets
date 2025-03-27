@@ -21,10 +21,12 @@ public class DepartmentRepositoryImpl : IDepartmentRepository
 
     public async Task<List<DepartmentDTO>> GetAllDepartment()
     {
-        var departmentEntity = await _context.Departments.ToListAsync();
+        var departmentEntity = await _context.Departments
+            .Include(d => d.Faculty) 
+            .ToListAsync();
         return _mapper.Map<List<DepartmentDTO>>(departmentEntity);
-
     }
+
     public async Task<DepartmentEntity> GetDepartmentWithDisciplinesAndTeachersAsync(string headUserId)
     {
         return await _context.Departments
@@ -69,7 +71,10 @@ public class DepartmentRepositoryImpl : IDepartmentRepository
 
     public async Task<DepartmentEntity> GetDepartmentByIdAsync(int departmentId)
     {
-        return await _context.Departments.FindAsync(departmentId);
+        return await _context.Departments
+        .Include(d => d.Faculty)
+        .FirstOrDefaultAsync(d => d.Id == departmentId);
+
     }
 
     public async Task<List<DepartmentDTO>> GetDepartmentsByFacultyIdAsync(int facultyId)

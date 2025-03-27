@@ -30,10 +30,20 @@ public class DepartmentProfile : Profile
             .ForMember(dest => dest.Discipline, opt => opt.MapFrom(src => src.Discipline));
 
         // 3. Маппинг между DTO и ViewModel
-        CreateMap<DepartmentDTO, DepartmantVM>().ReverseMap();
-        CreateMap<DepartmentsWithUsersDTO, DepartmentsWithUsersVM>().ReverseMap();
+        CreateMap<DepartmentDTO, DepartmantVM>()
+            .ForMember(dest => dest.FacultyName, opt => opt.MapFrom(src => src.FacultyName))
+            .ReverseMap();
+
+        CreateMap<DepartmentsWithUsersDTO, DepartmentsWithUsersVM>()
+            .ForMember(dest => dest.FacultyName, opt => opt.MapFrom(src => src.FacultyName))
+            .ReverseMap();
+
         CreateMap<GetDepartmantAndUserDTO, GetDepartmantAndUserVM>().ReverseMap();
-        CreateMap<DepartmentDTO, DepartmentAddEditVM>().ReverseMap();
+
+        CreateMap<DepartmentDTO, DepartmentAddEditVM>()
+            .ForMember(dest => dest.FacultyName, opt => opt.MapFrom(src => src.FacultyName))
+            .ReverseMap();
+
         CreateMap<DepartmentWithDisciplinesDTO, DepartmentWithDisciplinesVM>().ReverseMap();
         CreateMap<DisciplineWithTeachersDTO, DisciplineWithTeachersVM>().ReverseMap();
     }

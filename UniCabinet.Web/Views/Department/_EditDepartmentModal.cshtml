@@ -1,15 +1,17 @@
 ﻿@model UniCabinet.Core.Models.ViewModel.Department.DepartmentAddEditVM
 
-<!-- Вместо существующего кода: -->
 <div class="modal fade" id="editDepartmentModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form asp-action="EditDepartment" method="post" target="_top">
+            <form asp-action="EditDepartment" asp-controller="Department" method="post">
                 <div class="modal-header">
                     <h5 class="modal-title">Редактировать кафедру</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Add a hidden field for return URL -->
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <div class="mb-3">
                         <label>Название кафедры</label>

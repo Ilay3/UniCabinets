@@ -19,9 +19,13 @@
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@department.Id"
                             aria-expanded="false" aria-controls="collapse-@department.Id">
                         <span class="me-2"><i class="bi bi-building"></i></span> @department.DepartmentName
+                        @if (department.FacultyId.HasValue && !string.IsNullOrEmpty(department.FacultyName))
+                        {
+                            <span class="badge bg-info ms-2">@department.FacultyName</span>
+                        }
                     </button>
                 </h2>
-               
+
                 <!-- Содержимое кафедры -->
                 <div id="collapse-@department.Id" class="accordion-collapse collapse" aria-labelledby="heading-@department.Id" data-bs-parent="#departmentsAccordion">
                     <div class="accordion-body">
@@ -42,18 +46,30 @@
                                     onclick="openModal('@Url.Action("EditDepartmentModal", "Department", new { departmentId = department.Id })', 'editDepartmentModal')">
                                 <i class="bi bi-pencil-square"></i> Редактировать
                             </button>
+
+                            <a href="@Url.Action("DepartmentDetails", "Department", new { id = department.Id })" class="btn btn-info btn-sm ms-2">
+                                <i class="bi bi-eye"></i> Подробнее
+                            </a>
                         </div>
 
                         <!-- Таблица пользователей кафедры (минималистичная) -->
-                        <ul class="list-group list-group-flush">
-                            @foreach (var user in department.Users)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold">@user.FirstName @user.LastName</span>
-                                    <small class="text-muted">@string.Join(", ", user.Roles)</small>
-                                </li>
-                            }
-                        </ul>
+                        @if (department.Users != null && department.Users.Any())
+                        {
+                            <h6 class="mt-3 mb-2">Сотрудники кафедры:</h6>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var user in department.Users)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold">@user.FirstName @user.LastName</span>
+                                        <small class="text-muted">@string.Join(", ", user.Roles)</small>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">На кафедре нет сотрудников</p>
+                        }
                     </div>
                 </div>
             </div>

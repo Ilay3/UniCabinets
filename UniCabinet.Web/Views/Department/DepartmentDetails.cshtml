@@ -19,7 +19,17 @@
                 <div class="card-body">
                     <h5 class="card-title">Информация о кафедре</h5>
                     <p class="card-text"><strong>Название:</strong> @Model.DepartmentName</p>
-                    <p class="card-text"><strong>Факультет:</strong> @(string.IsNullOrEmpty(Model.FacultyName) ? "Не привязан к факультету" : Model.FacultyName)</p>
+                    <p class="card-text">
+                        <strong>Факультет:</strong>
+                        @if (Model.FacultyId.HasValue && !string.IsNullOrEmpty(Model.FacultyName))
+                        {
+                            <span class="text-success">@Model.FacultyName</span>
+                        }
+                        else
+                        {
+                            <span class="text-warning">Не привязан к факультету</span>
+                        }
+                    </p>
                 </div>
             </div>
         </div>

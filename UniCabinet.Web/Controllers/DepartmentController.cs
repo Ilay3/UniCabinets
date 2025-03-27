@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
+using UniCabinet.Application.Interfaces.Repository;
 using UniCabinet.Application.UseCases.DepartmentUseCase;
 using UniCabinet.Application.UseCases.DisciplineUseCase;
 using UniCabinet.Application.UseCases.FacultyUseCase;
@@ -15,10 +17,14 @@ namespace UniCabinet.Web.Controllers
     public class DepartmentController : Controller
     {
         private readonly IMapper _mapper;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IFacultyRepository _facultyRepository;
 
-        public DepartmentController(IMapper mapper)
+        public DepartmentController(IMapper mapper, IDepartmentRepository departmentRepository, IFacultyRepository facultyRepository)
         {
             _mapper = mapper;
+            _departmentRepository = departmentRepository;
+            _facultyRepository = facultyRepository;
         }
 
         [HttpGet]
@@ -75,40 +81,64 @@ namespace UniCabinet.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditDepartmentModal(
-    int departmentId,
-    [FromServices] GetDepartmentByIdUseCase getDepartmentByIdUseCase,
-    [FromServices] GetAllFacultiesUseCase getAllFacultiesUseCase)
+        public async Task<IActionResult> EditDepartmentModal(int departmentId)
         {
-            var departmentDTO = await getDepartmentByIdUseCase.ExecuteAsync(departmentId);
+            var getDepartmentUseCase = new GetDepartmentByIdUseCase(_departmentRepository, _mapper);
+            var departmentDTO = await getDepartmentUseCase.ExecuteAsync(departmentId);
+
             if (departmentDTO == null)
             {
                 return NotFound();
             }
 
-            var faculties = await getAllFacultiesUseCase.ExecuteAsync();
+            var model = new DepartmentAddEditVM
+            {
+                Id = departmentDTO.Id,
+                DepartmentName = departmentDTO.DepartmentName,
+                FacultyId = departmentDTO.FacultyId,
+                FacultyName = departmentDTO.FacultyName
+            };
 
-            ViewBag.Faculties = faculties ?? new List<FacultyListDTO>();
+            ViewBag.Faculties = await GetFacultiesForDropdown();
 
-            var model = _mapper.Map<DepartmentAddEditVM>(departmentDTO);
             return PartialView("_EditDepartmentModal", model);
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> EditDepartment(
-    DepartmentAddEditVM model,
-    [FromServices] EditDepartmentUseCase editDepartmentUseCase)
+        public async Task<IActionResult> EditDepartment(DepartmentAddEditVM model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
-                var departmentDTO = _mapper.Map<DepartmentDTO>(model);
+                var departmentDTO = new DepartmentDTO
+                {
+                    Id = model.Id.Value,
+                    DepartmentName = model.DepartmentName,
+                    FacultyId = model.FacultyId
+                };
+
+                var editDepartmentUseCase = new EditDepartmentUseCase(_departmentRepository, _mapper);
                 await editDepartmentUseCase.ExecuteAsync(departmentDTO);
 
-                return Redirect("/Department/DepartmentsAdminList");
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
+                return RedirectToAction("DepartmentsAdminList");
             }
 
-            // Если есть ошибки валидации, возвращаем к форме
-            return PartialView("_EditDepartmentModal", model);
+            ViewBag.Faculties = await GetFacultiesForDropdown();
+
+            return View("_EditDepartmentModal", model);
+        }
+
+        private async Task<List<object>> GetFacultiesForDropdown()
+        {
+            var getAllFacultiesUseCase = new GetAllFacultiesUseCase(_facultyRepository);
+            var faculties = await getAllFacultiesUseCase.ExecuteAsync();
+
+            return faculties.Select(f => new { Id = f.Id, Name = f.Name }).ToList<object>();
         }
 
         [HttpGet]

@@ -47,6 +47,8 @@ public class GetDepartmentsWithUsersUseCase
             {
                 Id = department.Id,
                 DepartmentName = department.DepartmentName,
+                FacultyId = department.FacultyId,
+                FacultyName = department.Faculty?.Name,
                 Users = userDTOs,
                 Discipline = _mapper.Map<List<DisciplineDTO>>(department.Discipline)
             };

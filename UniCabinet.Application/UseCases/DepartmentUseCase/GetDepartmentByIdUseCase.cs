@@ -21,6 +21,13 @@ public class GetDepartmentByIdUseCase
         if (departmentEntity == null)
             return null;
 
-        return _mapper.Map<DepartmentDTO>(departmentEntity);
+        var dto = _mapper.Map<DepartmentDTO>(departmentEntity);
+
+        if (departmentEntity.Faculty != null)
+        {
+            dto.FacultyName = departmentEntity.Faculty.Name;
+        }
+
+        return dto;
     }
 }
